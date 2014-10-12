@@ -5,11 +5,17 @@ Maintainer: Grigory Kramarenko <djbaldey@gmail.com>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.3
 Homepage: <http://example.com>
-#Vcs-Git: git://git.debian.org/collab-maint/hellodeb.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/hellodeb.git;a=summary
+Vcs-Hg: https://bitbucket.org/rosix/hellodeb
+Vcs-Browser: https://bitbucket.org/rosix/hellodeb
 
 Package: hellodeb
 Architecture: all
 Depends:  ${misc:Depends}, ${python:Depends}, python (>= 2.7), python (<< 3)
-Description: Hellodeb - simple example for building deb-packages
- This is example contains how to build debian package
+Description: Simple example for building deb-packages
+ This is a small package with a very short and simple example of how to
+ put together a package for your own program that does not require
+ compilation.
+ .
+ To view the statement is run in the terminal:
+ .
+ hellodeb
