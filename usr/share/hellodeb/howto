@@ -1,0 +1,96 @@
+#!/bin/bash
+
+########################################################################
+# FIRST STAGE: make catalog for control version, add files             #
+########################################################################
+mkdir -p hellodeb/hellodeb; cd hellodeb/hellodeb
+mkdir -p usr/bin/hellodeb
+
+cat > usr/share/hellodeb/hello <<EOF
+#!/usr/bin/env python
+# (C) 2011 Foo Bar, GPL2+
+print "Hello World!"
+print "HowTo:"
+print open("/usr/share/hellodeb/howto").read()
+EOF
+
+chmod 755 usr/share/hellodeb/hello
+mkdir -p etc/hellodeb
+echo "#config-file" > etc/hellodeb/hello.conf
+
+cat > test <<EOF
+#!/bin/sh
+sudo rm -rf /etc/hellodeb
+sudo rm -rf /usr/bin/hellodeb
+sudo rm -rf /usr/share/hellodeb
+sudo cp -R usr /
+sudo cp -R etc /
+hellodeb
+EOF
+chmod 755 test
+
+########################################################################
+# SECOND STAGE: init & commit VCS, make archive without debian files   #
+########################################################################
+hg init && hg addremove && hg commit -m "Init"
+
+# CREATE ARCHIVE WHITH VERSION:
+cd ..
+tar -cvzf hellodeb-1.0.tar.gz hellodeb --exclude-vcs
+cd -
+
+########################################################################
+# THIRD STAGE: debianization package                                  #
+########################################################################
+cd hellodeb
+dh_make -p hellodeb_1.0
+
+# THEN EDIT THE FOLLOWING FILES:
+# debian/changelog
+# debian/control
+# debian/copyright
+# etc...
+
+# FOR PYTHON CHANGE debian/rules
+# NOTE, USED TAB CODE BEFORE DH COMMAND:
+cat > debian/rules <<EOF
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+%:
+$(echo -e '\t')dh \$@ --with=python2
+EOF
+
+# FOR PYTHON PACKAGE CREATE INSTALL-FILE:
+cat > debian/hellodeb.install <<EOF
+etc
+usr
+EOF
+chmod 755 debian/hellodeb.install
+
+# REMOVE ALL DONT USED FILES:
+rm debian/*.ex debian/*.EX debian/rules.dh*
+
+# REMOVE DONT USED README.* FILES:
+rm debian/README.Debian debian/README.source
+
+########################################################################
+# FOURTH STAGE: commit debain files & build package                    #
+########################################################################
+hg addremove && hg commit -m "Debianization"
+
+# BUILD PACKAGE:
+dh_make -p hellodeb_1.0 --createorig -f ../hellodeb-1.0.tar.gz
+debuild # or dpkg-buildpackage -rfakeroot
+
+########################################################################
+#                               THE END                                #
+########################################################################
+

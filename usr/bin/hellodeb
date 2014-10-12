@@ -1,0 +1,6 @@
+#!/usr/bin/python
+# (C) 2011 Foo Bar, GPL2+
+print "Hello DEB!"
+print "HOWTO:"
+print open("/usr/share/hellodeb/howto").read()
+

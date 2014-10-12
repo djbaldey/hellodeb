@@ -1,0 +1,10 @@
+#!/bin/sh
+
+sudo rm -rf /etc/hellodeb
+sudo rm -rf /usr/bin/hellodeb
+sudo rm -rf /usr/share/hellodeb
+
+sudo cp -R usr /
+sudo cp -R etc /
+
+hellodeb
